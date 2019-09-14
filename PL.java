@@ -3,8 +3,8 @@ import java.util.Scanner;
 public class PL {
 
     // {** CONSTANT **}
-    final int IdxMin = 1;
-    final int IdxMax = 100;
+    static final int IdxMin = 1;
+    static final int IdxMax = 100;
 
     protected int Na;
     protected int[] a;
@@ -19,8 +19,8 @@ public class PL {
     // Menginisiasi Na, b, dan a
     // dijalankan setiap membuat objek baru
 
-    public void StringToPL(String StrPL, PL Pers) {
-
+    static PL StringToPL(String StrPL, PL Pers) {
+        
         String[] arrStrPL = StrPL.split("");
         // Merubah string ke dalam bentuk array
 
@@ -79,8 +79,8 @@ public class PL {
                 Pows = "1";
             }
 
-            System.out.println("Koef " + Koef);
-            System.out.println("Pows " + Pows);
+            // System.out.println("Koef " + Koef);
+            // System.out.println("Pows " + Pows);
             // ----- Koefisien ------
             // Koefisiennya adalah angka dari index ke-Idx sampai tanda (^)
             // Jika tidak ada angka diantara tanda tersebut maka koefisiennya 1
@@ -95,7 +95,7 @@ public class PL {
             // Memperbarui nilai pangkat tertinggi
 
             if (arrStrPL[Idx-1].equals("-")) {
-                Pers.a[cPow] = Integer.parseInt(Koef)*(-1);
+                Pers.a[cPow] = Integer.parseInt(Koef)*(-1); 
             } else {
                 Pers.a[cPow] = Integer.parseInt(Koef);
             }
@@ -114,6 +114,8 @@ public class PL {
         Pers.b = Integer.parseInt(B);
 
         Pers.Na = aMax;
+
+        return Pers;
     }
     
     // Prekondisi : persamaan valid
@@ -125,27 +127,27 @@ public class PL {
 
     // {** SELEKTOR **}
 
-    private int GetFirstIdx() {
+    static int GetFirstIdx(PL Pers) {
         return IdxMin;
     }
     // Perkondisi : PL tidak kosong
     // Mengembalikan index pertama yang terdefinisi
 
-    private int GetLastIdx() {
-        return Na;
+    static int GetLastIdx(PL Pers) {
+        return Pers.Na;
     }
     // Prekondisi : PL tidak kosong
     // Mengembalikan index terakhir yang terdefinisi
 
-    public int GetB() {
-        return b;
+    static int GetB(PL Pers) {
+        return Pers.b;
     }
     // Prekondisi : Pers terdefinisi
     // untuk persamaan ax1+ax2+....+axn = b
     // mengembalikan nilai b pada persamaan 
 
-    public int[] GetA() {
-        return a;
+    static int[] GetA(PL Pers) {
+        return Pers.a;
     }
     // Prekondisi : Pers terdefinisi
     // untuk persamaan ax1+ax2+....+axn = b
@@ -153,14 +155,14 @@ public class PL {
     // dalam bentuk array dengan nilai pangkat
     // sebagi indeksnya
 
-    public int GetAn(int Pow) {
-        return a[Pow];
+    static int GetAn(PL Pers,int Pow) {
+        return Pers.a[Pow];
     }
     // Prekondisi : Pers,Pow terdefinisi
     // mengembalikan nilai a ke-n pada persamaan
 
-	public int GetNa() {
-	    return Na;
+	static int GetNa(PL Pers) {
+	    return Pers.Na;
     }
     // Prekondisi : Pers terdefinisi
     // mengembalikan banyaknya a pada persamaan 
@@ -168,40 +170,49 @@ public class PL {
 
     // {** BACA dan TULIS **}
 
-    public void BacaPL(PL Pers) {
+    static PL BacaPL(PL Pers) {
         Scanner Input = new Scanner(System.in);
 
         String StrSPL = Input.nextLine();
-        StringToPL(StrSPL, Pers);
-
+        Pers = StringToPL(StrSPL, Pers);
+        return Pers;
     }
     // I.S : Pers Sembarang
     // F.S : Pers terdefinisi
 
-    public void TulisPL() {
-        int Idx = GetLastIdx();
+    static void TulisPL(PL Pers) {
 
-        while ( Idx > GetFirstIdx() + 1 ) {
+        if ( GetAn(Pers,GetLastIdx(Pers)) != 0 ) {
+            System.out.print(GetAn(Pers,GetLastIdx(Pers)) + "x^" + GetLastIdx(Pers));
+        }
+
+        int Idx = GetLastIdx(Pers)-1;
+
+        while ( Idx > GetFirstIdx(Pers) ) {
             
-            if ( GetAn(Idx) != 0 ) {
-                System.out.print(GetAn(Idx) + "x^" + Idx);
-                if (GetAn(Idx) > 0) {
+            if ( GetAn(Pers,Idx) != 0 ) {
+                if (GetAn(Pers,Idx) > 0) {
                     System.out.print("+");
                 }
+                System.out.print(GetAn(Pers,Idx) + "x^" + Idx);
             }
             Idx--;
         }
-        System.out.print(GetAn(GetFirstIdx()) + "x=" + GetB() + "\n");
+
+        System.out.print("=" + GetB(Pers) + "\n");
+        
     }
     // I.S : Pers terdefinisi
     // F.S : Menuliskan Pers ke layar
 
     public static void main(String[] args) {
         PL Pers = new PL();
-        Pers.BacaPL(Pers);
-        Pers.TulisPL();
-        for (int i = 0; i < Pers.GetNa(); i++) {
-            System.out.println(Pers.a[i]);
-        }
+        Pers = BacaPL(Pers);
+        System.out.println(GetAn(Pers,2));
+        TulisPL(Pers);
+        // for (int i = 0; i < GetNa(Pers); i++) {
+        //     // System.out.println("index " + i);
+        //     // System.out.println(Pers.a[i]);
+        // }
     }
 }

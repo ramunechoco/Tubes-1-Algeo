@@ -20,102 +20,47 @@ public class PL {
     // dijalankan setiap membuat objek baru
 
     static PL StringToPL(String StrPL, PL Pers) {
-        
-        String[] arrStrPL = StrPL.split("");
+
+        String[] Arr = StrPL.split("");
         // Merubah string ke dalam bentuk array
 
-        int aMax = 1;
-        // Variabel untuk menyimpan nilai pangakt tertinggi
-
-        String B = "";
-
-        if (!arrStrPL[0].equals("-")) {
-            StrPL = "+" + StrPL;
-            arrStrPL = StrPL.split("");
-        }
-        // Menambahkan tanda didepan angka pertama
-
-        int Idx = IdxMin;
-
-        int IdxEqSign = Idx;
-        while (!arrStrPL[IdxEqSign].equals("=")) {
-            IdxEqSign++;
-        }
-
-        while (Idx < IdxEqSign) {
-
-            String Koef = "";
-            String Pows = "";
-            // String untuk menyimpan nilai a dan pangkat
-
-            int IdxPlusMin = Idx;
-            while (IdxPlusMin < IdxEqSign && !arrStrPL[IdxPlusMin].equals("+") && !arrStrPL[IdxPlusMin].equals("-")) {
-                IdxPlusMin++;
+        int i = 1;
+        while ( i < Arr.length ) {
+            while ( !Arr[i].equals("-") && i < Arr.length ) {
+                i++;
+                if ( i == Arr.length) {
+                    break;
+                }
             }
-            // Mencari tanda (+) atau (-)
 
-            int IdxPow = Idx+1;
-            while (!arrStrPL[IdxPow].equals("^") && IdxPow < IdxPlusMin-1) {
-                IdxPow++;
-            }
-            // Mencari tanda (^)
-
-            if ( arrStrPL[IdxPow].equals("^") ) {
-                if ( arrStrPL[Idx].equals("x") ) {
-                    Koef = "1";
-                } else {
-                    for ( int IdxKoef = Idx; IdxKoef < IdxPow-1; IdxKoef++) {
-                        Koef += arrStrPL[IdxKoef];
+            if ( i < Arr.length ) {
+                if ( Arr[i].equals("-") && !Arr[i-1].equals("+") && !Arr[i-1].equals("=") ) {
+                    StrPL = "";
+                    for ( int j = 0; j < i; j++ ) {
+                        StrPL += Arr[j];
+                    }
+    
+                    StrPL += "+";
+    
+                    for ( int j = i; j < Arr.length; j++ ) {
+                        StrPL += Arr[j];
                     }
                 }
-
-                for ( int IdxPows = IdxPow + 1; IdxPows < IdxPlusMin; IdxPows++ ) {
-                    Pows += arrStrPL[IdxPows];
-                }
-            } else if (arrStrPL[IdxPow].equals("x")) {
-                for ( int IdxKoef = Idx; IdxKoef < IdxPlusMin - 1; IdxKoef++ ) {
-                    Koef += arrStrPL[IdxKoef];
-                }
-                Pows = "1";
             }
 
-            // System.out.println("Koef " + Koef);
-            // System.out.println("Pows " + Pows);
-            // ----- Koefisien ------
-            // Koefisiennya adalah angka dari index ke-Idx sampai tanda (^)
-            // Jika tidak ada angka diantara tanda tersebut maka koefisiennya 1
-            // ----- Pangkat -------
-            // Jika terdapat tanda (^) maka nilai pangkat nya ada diantara tanda (^) dan (+) atau (-)
-            // Jika tidak terdapat tanda (^) maka nilai pangkatnya adalah 1
+            Arr = StrPL.split("");
 
-            int cPow = Integer.parseInt(Pows);
-            if (cPow > aMax) {
-                aMax = cPow;
-            }
-            // Memperbarui nilai pangkat tertinggi
-
-            if (arrStrPL[Idx-1].equals("-")) {
-                Pers.a[cPow] = Integer.parseInt(Koef)*(-1); 
-            } else {
-                Pers.a[cPow] = Integer.parseInt(Koef);
-            }
-            // Menginisiasi nilai array dengan koefisien sebagai elemen
-            // dan index sebagai pangkatnya
-
-            Idx = IdxPlusMin + 1;
-            // Memulai perncarian dari elemen setelah tanda (+) atau (-)
-
+            i++;
         }
-
-        for (int i = IdxEqSign+1; i < arrStrPL.length; i++) {
-            B += arrStrPL[i];
+        
+        Arr = StrPL.split("[+=]");
+        for ( int j = 0; j < Arr.length - 2; j++ ) {
+            String[] Arr2 = Arr[j].split("x");
+            Pers.a[Integer.parseInt(Arr2[1])] = Integer.parseInt(Arr2[0]);
         }
-
-        Pers.b = Integer.parseInt(B);
-
-        Pers.Na = aMax;
-
+        
         return Pers;
+        
     }
     
     // Prekondisi : persamaan valid
@@ -170,13 +115,13 @@ public class PL {
 
     // {** BACA dan TULIS **}
 
-    static PL BacaPL(PL Pers) {
-        Scanner Input = new Scanner(System.in);
+    // static PL BacaPL(PL Pers) {
+    //     Scanner Input = new Scanner(System.in);
 
-        String StrSPL = Input.nextLine();
-        Pers = StringToPL(StrSPL, Pers);
-        return Pers;
-    }
+    //     String StrSPL = Input.nextLine();
+    //     Pers = StringToPL(StrSPL, Pers);
+    //     return Pers;
+    // }
     // I.S : Pers Sembarang
     // F.S : Pers terdefinisi
 
@@ -207,12 +152,6 @@ public class PL {
 
     public static void main(String[] args) {
         PL Pers = new PL();
-        Pers = BacaPL(Pers);
-        System.out.println(GetAn(Pers,2));
-        TulisPL(Pers);
-        // for (int i = 0; i < GetNa(Pers); i++) {
-        //     // System.out.println("index " + i);
-        //     // System.out.println(Pers.a[i]);
-        // }
+        Pers = StringToPL("2x=-10", Pers);
     }
 }
